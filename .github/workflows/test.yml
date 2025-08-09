@@ -1,0 +1,41 @@
+name: Test Project
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: node:20
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+
+      - name: build
+        run: npm run build
+
+      - name: Lint code
+        run: npm run lint
+
+      - name: Format code
+        run: npm run format
+
+      - run: npm ci
+        name: Install dependencies with npm ci
