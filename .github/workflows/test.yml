@@ -7,10 +7,14 @@ on:
   pull_request:
     branches:
       - main
+env:
+  SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+  SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    environment: production
     container:
       image: node:20
     steps:
