@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useTransition } from 'react';
+import React, { useState } from 'react';
 import { createTask, toggleTask, deleteTask, updateTask } from './actions';
 
 interface Task {
@@ -20,7 +20,8 @@ export default function TasksList({ initialTasks }: TasksListProps) {
   const [error, setError] = useState('');
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editTitle, setEditTitle] = useState('');
-  const [isPending, startTransition] = useTransition();
+  const [isAdding, setIsAdding] = useState(false);
+  // const [isPending, startTransition] = useTransition();
 
   const handleAddTask = async () => {
     if (!newTitle.trim()) {
@@ -29,16 +30,18 @@ export default function TasksList({ initialTasks }: TasksListProps) {
     }
 
     setError('');
+    setIsAdding(true);
 
-    startTransition(async () => {
-      try {
-        const newTask = await createTask(newTitle);
-        setTasks((prev) => [newTask, ...prev]);
-        setNewTitle('');
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Error adding task');
-      }
-    });
+    try {
+      const newTask = await createTask(newTitle);
+      setTasks((prev) => [newTask, ...prev]);
+      setIsAdding(true);
+      setNewTitle('');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error adding task');
+    } finally {
+      setIsAdding(false);
+    }
   };
 
   const handleToggleTask = async (id: number, completed: boolean) => {
@@ -51,19 +54,17 @@ export default function TasksList({ initialTasks }: TasksListProps) {
       )
     );
 
-    startTransition(async () => {
-      try {
-        await toggleTask(id, completed);
-      } catch (err) {
-        // Revert on error
-        setTasks((prev) =>
-          prev.map((task) =>
-            task.id === id ? { ...task, completed: completed } : task
-          )
-        );
-        setError(err instanceof Error ? err.message : 'Error updating task');
-      }
-    });
+    try {
+      await toggleTask(id, completed);
+    } catch (err) {
+      // Revert on error
+      setTasks((prev) =>
+        prev.map((task) =>
+          task.id === id ? { ...task, completed: completed } : task
+        )
+      );
+      setError(err instanceof Error ? err.message : 'Error updating task');
+    }
   };
 
   const handleDeleteTask = async (id: number) => {
@@ -75,15 +76,13 @@ export default function TasksList({ initialTasks }: TasksListProps) {
     const previousTasks = tasks;
     setTasks((prev) => prev.filter((task) => task.id !== id));
 
-    startTransition(async () => {
-      try {
-        await deleteTask(id);
-      } catch (err) {
-        // Revert on error
-        setTasks(previousTasks);
-        setError(err instanceof Error ? err.message : 'Error deleting task');
-      }
-    });
+    try {
+      await deleteTask(id);
+    } catch (err) {
+      // Revert on error
+      setTasks(previousTasks);
+      setError(err instanceof Error ? err.message : 'Error deleting task');
+    }
   };
 
   const startEdit = (task: Task) => {
@@ -105,22 +104,21 @@ export default function TasksList({ initialTasks }: TasksListProps) {
 
     setError('');
 
-    startTransition(async () => {
-      try {
-        const updatedTask = await updateTask(id, editTitle);
-        setTasks((prev) =>
-          prev.map((task) => (task.id === id ? updatedTask : task))
-        );
-        setEditingId(null);
-        setEditTitle('');
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Error updating task');
-      }
-    });
+    try {
+      const updatedTask = await updateTask(id, editTitle);
+      setTasks((prev) =>
+        prev.map((task) => (task.id === id ? updatedTask : task))
+      );
+      setEditingId(null);
+      setEditTitle('');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error updating task');
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
+      setIsAdding(true);
       handleAddTask();
     }
   };
@@ -144,14 +142,14 @@ export default function TasksList({ initialTasks }: TasksListProps) {
             onKeyPress={handleKeyPress}
             className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Add a new task..."
-            disabled={isPending}
+            // disabled={isPending}
           />
           <button
             onClick={handleAddTask}
-            disabled={isPending || !newTitle.trim()}
+            // disabled={isPending || !newTitle.trim()}
             className="px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            {isPending ? 'Adding...' : 'Add'}
+            {isAdding ? 'Adding...' : 'Add'}
           </button>
         </div>
       </div>
@@ -182,7 +180,7 @@ export default function TasksList({ initialTasks }: TasksListProps) {
                 checked={task.completed}
                 onChange={() => handleToggleTask(task.id, task.completed)}
                 className="h-5 w-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500 cursor-pointer"
-                disabled={isPending}
+                // disabled={isPending}
               />
 
               {/* Task Title */}
@@ -197,7 +195,7 @@ export default function TasksList({ initialTasks }: TasksListProps) {
                   }}
                   className="flex-1 px-3 py-1 border border-blue-500 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                   autoFocus
-                  disabled={isPending}
+                  // disabled={isPending}
                 />
               ) : (
                 <span
@@ -217,14 +215,14 @@ export default function TasksList({ initialTasks }: TasksListProps) {
                   <>
                     <button
                       onClick={() => saveEdit(task.id)}
-                      disabled={isPending}
+                      // disabled={isPending}
                       className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 transition-colors disabled:opacity-50"
                     >
                       Save
                     </button>
                     <button
                       onClick={cancelEdit}
-                      disabled={isPending}
+                      // disabled={isPending}
                       className="px-3 py-1 text-sm bg-gray-400 text-white rounded hover:bg-gray-500 transition-colors disabled:opacity-50"
                     >
                       Cancel
@@ -234,14 +232,14 @@ export default function TasksList({ initialTasks }: TasksListProps) {
                   <>
                     <button
                       onClick={() => startEdit(task)}
-                      disabled={isPending}
+                      // disabled={isPending}
                       className="px-3 py-1 text-sm text-blue-600 hover:bg-blue-50 rounded transition-colors disabled:opacity-50"
                     >
                       Edit
                     </button>
                     <button
                       onClick={() => handleDeleteTask(task.id)}
-                      disabled={isPending}
+                      // disabled={isPending}
                       className="px-3 py-1 text-sm text-red-600 hover:bg-red-50 rounded transition-colors disabled:opacity-50"
                     >
                       Delete
