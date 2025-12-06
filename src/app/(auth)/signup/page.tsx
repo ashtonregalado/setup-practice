@@ -24,6 +24,19 @@ export default function SignUpPage() {
       return;
     }
 
+    const passwordIsValid =
+      password.length >= 8 &&
+      /[A-Z]/.test(password) &&
+      /[a-z]/.test(password) &&
+      /[0-9]/.test(password);
+
+    if (!passwordIsValid) {
+      setError(
+        'Password must be at least 8 characters long and include uppercase, lowercase, and a number.'
+      );
+      return;
+    }
+
     setLoading(true);
     try {
       const { data, error } = await supabase.auth.signUp({
