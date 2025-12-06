@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { toast, Toaster } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 import Link from 'next/link';
@@ -41,7 +42,14 @@ export default function SignUpPage() {
         );
         return;
       }
-      router.push('/tasks');
+
+      toast('Check your email', {
+        description: 'A confirmation link has been sent to your inbox.',
+      });
+
+      setTimeout(() => {
+        router.push('/signin');
+      }, 3000);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Sign up failed');
     } finally {
@@ -51,6 +59,8 @@ export default function SignUpPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <Toaster richColors closeButton />
+
       <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-md">
         <h2 className="text-2xl font-bold mb-6 text-center">Sign Up</h2>
         <form onSubmit={handleSignUp} className="space-y-4">
@@ -66,6 +76,7 @@ export default function SignUpPage() {
               required
             />
           </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Password
@@ -78,6 +89,7 @@ export default function SignUpPage() {
               required
             />
           </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Confirm Password
@@ -90,7 +102,9 @@ export default function SignUpPage() {
               required
             />
           </div>
+
           {error && <p className="text-red-600 text-sm">{error}</p>}
+
           <button
             type="submit"
             disabled={loading}
@@ -99,9 +113,10 @@ export default function SignUpPage() {
             {loading ? 'Signing up...' : 'Sign Up'}
           </button>
         </form>
+
         <p className="mt-4 text-center text-sm text-gray-600">
           Already have an account?{' '}
-          <Link href="/auth/signin" className="text-blue-600 hover:underline">
+          <Link href="/signin" className="text-blue-600 hover:underline">
             Sign in
           </Link>
         </p>
