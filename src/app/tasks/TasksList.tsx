@@ -132,7 +132,6 @@ export default function TasksList({ initialTasks }: TasksListProps) {
         </span>
       </div>
 
-      {/* Add Task Input */}
       <div className="mb-6">
         <div className="flex gap-2">
           <input
@@ -140,9 +139,8 @@ export default function TasksList({ initialTasks }: TasksListProps) {
             value={newTitle}
             onChange={(e) => setNewTitle(e.target.value)}
             onKeyPress={handleKeyPress}
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Add a new task..."
-            // disabled={isPending}
           />
           <button
             onClick={handleAddTask}
@@ -154,7 +152,6 @@ export default function TasksList({ initialTasks }: TasksListProps) {
         </div>
       </div>
 
-      {/* Error Message */}
       {error && (
         <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm">
           {error}
@@ -174,16 +171,13 @@ export default function TasksList({ initialTasks }: TasksListProps) {
               key={task.id}
               className="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
             >
-              {/* Checkbox */}
               <input
                 type="checkbox"
                 checked={task.completed}
                 onChange={() => handleToggleTask(task.id, task.completed)}
                 className="h-5 w-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500 cursor-pointer"
-                // disabled={isPending}
               />
 
-              {/* Task Title */}
               {editingId === task.id ? (
                 <input
                   type="text"
@@ -195,7 +189,6 @@ export default function TasksList({ initialTasks }: TasksListProps) {
                   }}
                   className="flex-1 px-3 py-1 border border-blue-500 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                   autoFocus
-                  // disabled={isPending}
                 />
               ) : (
                 <span
@@ -209,20 +202,17 @@ export default function TasksList({ initialTasks }: TasksListProps) {
                 </span>
               )}
 
-              {/* Action Buttons */}
               <div className="flex gap-2">
                 {editingId === task.id ? (
                   <>
                     <button
                       onClick={() => saveEdit(task.id)}
-                      // disabled={isPending}
                       className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 transition-colors disabled:opacity-50"
                     >
                       Save
                     </button>
                     <button
                       onClick={cancelEdit}
-                      // disabled={isPending}
                       className="px-3 py-1 text-sm bg-gray-400 text-white rounded hover:bg-gray-500 transition-colors disabled:opacity-50"
                     >
                       Cancel
@@ -232,14 +222,12 @@ export default function TasksList({ initialTasks }: TasksListProps) {
                   <>
                     <button
                       onClick={() => startEdit(task)}
-                      // disabled={isPending}
                       className="px-3 py-1 text-sm text-blue-600 hover:bg-blue-50 rounded transition-colors disabled:opacity-50"
                     >
                       Edit
                     </button>
                     <button
                       onClick={() => handleDeleteTask(task.id)}
-                      // disabled={isPending}
                       className="px-3 py-1 text-sm text-red-600 hover:bg-red-50 rounded transition-colors disabled:opacity-50"
                     >
                       Delete
@@ -252,7 +240,6 @@ export default function TasksList({ initialTasks }: TasksListProps) {
         </ul>
       )}
 
-      {/* Task Stats */}
       {tasks.length > 0 && (
         <div className="mt-6 pt-4 border-t border-gray-200 text-sm text-gray-600">
           <div className="flex justify-between">
